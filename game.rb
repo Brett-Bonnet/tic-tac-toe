@@ -15,15 +15,28 @@ class Board
   end
 
   def self.move(symbol, move)
-    if !@@game_state[move] == "X" || "O"
+    if @@game_state[move] != "X" || @@game_state[move] != "O" 
       @@game_state[move] = symbol
     end
-    print @@game_state
+    display
   end
+  
+  def self.display
+    puts "#{@@game_state[0]} | #{@@game_state[1]} | #{@@game_state[2]} "
+    puts "--|---|--"
+    puts "#{@@game_state[3]} | #{@@game_state[4]} | #{@@game_state[5]} "
+    puts "--|---|--"
+    puts "#{@@game_state[6]} | #{@@game_state[7]} | #{@@game_state[8]} "
+  end
+
+  def self.game_check
+    
+  end
+
 end
 
 class Game
-attr_reader :player1, :player2
+attr_accessor :player1, :player2
    
   def initialize
     welcome
@@ -45,16 +58,24 @@ attr_reader :player1, :player2
   end
 
   def self.play
-    
-  @counter = 1  
-    for @counter in 1..9
-      puts "Choose a number [1 - 9]"
-      player_move = gets.chomp.to_i
-      Board.move(@@player1.symbol, player_move - 1)
+  current_player = [@@player1, @@player2]  
+  i = 0
+  counter = 0  
+    Board.display
+    while counter < 9 do
+      if i > 1
+        i = 0
+      end   
+      puts "#{current_player[i].name}, Choose a number [1 - 9]"
+      player_move = gets.to_i
+      Board.move(current_player[i].symbol, player_move - 1)
+      counter += 1
+      i += 1
     end
   end
 end
 
 
 Game.new
+
 
