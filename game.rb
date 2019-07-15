@@ -36,7 +36,7 @@ class Board
 end
 
 class Game
-attr_accessor :player1, :player2
+attr_reader :player1, :player2
    
   def initialize
     welcome
