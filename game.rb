@@ -1,5 +1,3 @@
-
-
 class Player
   attr_reader :name, :symbol
     def initialize(name, symbol)
@@ -10,13 +8,16 @@ class Player
 end
 
 class Board
+ attr_reader :game_state
   def initialize
     @@game_state = [1, 2, 3, 4, 5, 6, 7, 8, 9]
   end
 
   def self.move(symbol, move)
-    if @@game_state[move] != "X" || @@game_state[move] != "O" 
+    if @@game_state[move] != "X" && @@game_state[move] != "O" 
       @@game_state[move] = symbol
+    else 
+      puts "Not a valid move!"
     end
     display
   end
@@ -61,21 +62,27 @@ attr_reader :player1, :player2
   current_player = [@@player1, @@player2]  
   i = 0
   counter = 0  
+  played_moves = []
+  allowed_moves = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     Board.display
     while counter < 9 do
       if i > 1
         i = 0
       end   
       puts "#{current_player[i].name}, Choose a number [1 - 9]"
-      player_move = gets.to_i
+      player_move = gets.chomp.to_i
+      if played_moves.include?(player_move)
+        puts "Not a valid move! Try again."
+        redo
+      else
+      played_moves.push(player_move.to_i)  
       Board.move(current_player[i].symbol, player_move - 1)
       counter += 1
       i += 1
+      end
     end
   end
 end
 
 
 Game.new
-
-
