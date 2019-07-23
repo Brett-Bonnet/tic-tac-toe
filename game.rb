@@ -1,88 +1,108 @@
 class Player
-  attr_reader :name, :symbol
-    def initialize(name, symbol)
+attr_reader :name, :symbol
+  def initialize(name, symbol)
     @name = name
     @symbol = symbol
   end
-
 end
 
 class Board
- attr_reader :game_state
+attr_reader :board_state
   def initialize
-    @@game_state = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    @board_state = [1, 2, 3, 4, 5, 6, 7, 8, 9]
   end
 
-  def self.move(symbol, move)
-    if @@game_state[move] != "X" && @@game_state[move] != "O" 
-      @@game_state[move] = symbol
-    else 
-      puts "Not a valid move!"
-    end
-    display
-  end
-  
-  def self.display
-    puts "#{@@game_state[0]} | #{@@game_state[1]} | #{@@game_state[2]} "
-    puts "--|---|--"
-    puts "#{@@game_state[3]} | #{@@game_state[4]} | #{@@game_state[5]} "
-    puts "--|---|--"
-    puts "#{@@game_state[6]} | #{@@game_state[7]} | #{@@game_state[8]} "
+  def update(move, symbol)
+    @board_state[move-1] = symbol
   end
 
-  def self.game_check
-    
+  def display
+    puts " #{@board_state[0]} | #{@board_state[1]} | #{@board_state[2]} "
+    puts "---|---|---"
+    puts " #{@board_state[3]} | #{@board_state[4]} | #{@board_state[5]} "
+    puts "---|---|---"
+    puts " #{@board_state[6]} | #{@board_state[7]} | #{@board_state[8]} "
   end
 
 end
 
 class Game
-attr_reader :player1, :player2
-   
   def initialize
-    welcome
-    get_players
+    @board = Board.new
+    @played_moves = [[], []]
+    @number_of_moves = 0
+    @winning_moves = [
+			[1, 2, 3], [4, 5, 6], 
+			[7, 8, 9], [1, 4, 7],
+			[2, 5, 8], [3, 6, 9],
+			[1, 5, 9], [7, 5, 3]
+		]
+    play
   end
 
-  def welcome
-    puts "Welcome to Tic Tac Toe!"
+  def display
+    @board.display
+  end
+
+  def play
+    puts "Welcome to Tic-Tac-Toe!"
+    get_players
+    i = 0
+    
+    loop do
+      display
+      if i > 1
+        i = 0
+      end
+      @current_player = @players[i]
+      
+      puts "#{@current_player.name}, choose a number [1-9] to play!"
+      player_turn(i)
+      
+      @number_of_moves += 1
+      game_over?(i)
+      break if @won
+      i += 1
+    break if @number_of_moves == 9
+    end
+    
   end
 
   def get_players
-    puts "Player 1, what is your name?"
-    @@player1 = Player.new(gets.chomp, "X")
-    puts "Player 2, what is your name?"
-    @@player2 = Player.new(gets.chomp, "O")
-    puts "#{@@player1.name}(#{@@player1.symbol}) and #{@@player2.name}(#{@@player2.symbol}) are ready to play!"
-    Board.new
-    Game.play
+     puts "Player 1, what's your name?"
+     @player1 = Player.new(gets.chomp, "X")
+     puts "Player 2, what's your name?"
+     @player2 = Player.new(gets.chomp, "O")
+     puts "#{@player1.name}(#{@player1.symbol}) and #{@player2.name}(#{@player2.symbol}) are ready to play!"
+     @players = [@player1, @player2]
   end
 
-  def self.play
-  current_player = [@@player1, @@player2]  
-  i = 0
-  counter = 0  
-  played_moves = []
-  allowed_moves = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-    Board.display
-    while counter < 9 do
-      if i > 1
-        i = 0
-      end   
-      puts "#{current_player[i].name}, Choose a number [1 - 9]"
-      player_move = gets.chomp.to_i
-      if played_moves.include?(player_move)
-        puts "Not a valid move! Try again."
-        redo
-      else
-      played_moves.push(player_move.to_i)  
-      Board.move(current_player[i].symbol, player_move - 1)
-      counter += 1
-      i += 1
-      end
+  def player_turn(counter)
+    move = gets.chomp.to_i
+    @board.update(move, @current_player.symbol)
+    @played_moves[counter].push(move)
+    
+  end
+
+  def game_over?(counter)
+  @won = false
+    @winning_moves.each do |array|
+      if (array - @played_moves[counter]).empty?
+       @won = true
+       declare_winner
+     end
     end
   end
+  
+  def declare_winner
+    display
+    puts "#{@current_player.name} is the winner!"
+  end
+  
+  
+
+
+
 end
 
-
-Game.new
+play = Game.new
