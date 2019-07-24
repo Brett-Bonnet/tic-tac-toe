@@ -57,11 +57,15 @@ class Game
       @current_player = @players[i]
       
       puts "#{@current_player.name}, choose a number [1-9] to play!"
-      player_turn(i)
-      
+      move = gets.chomp.to_i
+      if valid_move?(move)
+        make_move(i, move)
+      else puts "Not a valid move! Try again."
+        redo 
+      end
       @number_of_moves += 1
       game_over?(i)
-      break if @won
+    break if @won
       i += 1
     break if @number_of_moves == 9
     end
@@ -77,11 +81,11 @@ class Game
      @players = [@player1, @player2]
   end
 
-  def player_turn(counter)
-    move = gets.chomp.to_i
-    @board.update(move, @current_player.symbol)
-    @played_moves[counter].push(move)
-    
+  def make_move(counter, move)
+      @board.update(move, @current_player.symbol)
+      @played_moves[counter].push(move)
+
+  
   end
 
   def game_over?(counter)
@@ -97,8 +101,19 @@ class Game
   def declare_winner
     display
     puts "#{@current_player.name} is the winner!"
+    
   end
   
+  def valid_move?(move)
+    if @played_moves[0].include?(move) || @played_moves[1].include?(move)
+      false
+    else
+      if (1..9) === move
+      true
+      end
+    end  
+    
+  end
   
 
 
